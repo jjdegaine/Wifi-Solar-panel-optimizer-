@@ -33,7 +33,7 @@ https://www.oscaro-power.com/kit-solaire-autoconsommation/706-3835-kit-solaire-a
 
     Please note that it was my first Hardware and Software project since my Ph.D. forty years ago...
     
-    ---
+    
 
 # Optimizer description
 
@@ -54,7 +54,8 @@ A lot of opimizer exist, commercial one and DIY project. The commercial optimize
  One core will be used for power calculation, the second core for wi-fi link
  The power calculation is mainly based on ptiwatt router.
 
----
+
+
 # Hardware description
 
 
