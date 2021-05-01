@@ -103,7 +103,9 @@ The full Schematic is available on GITHUB
 # Software description
 
 
-    see comments on source code :-)    [github](https://github.com/jjdegaine/Wifi-Solar-panel-optimizer-)
+    see comments on source code :-)    
+    
+[github](https://github.com/jjdegaine/Wifi-Solar-panel-optimizer-)
 
     One software for the Server and one software for the client
 
@@ -163,6 +165,7 @@ Wi-fi
     a small M5STACK module can be used as a remote display.
 
     Wifi parameter to be modified
+
 ```c++
 const char *ssid = "BB9ESERVER";   // for example to be changed 
 const char *password = "BB9ESERVER";  // for examplet  to be changed
