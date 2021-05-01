@@ -103,7 +103,12 @@ The full Schematic is available on GITHUB
     see link to install ESP32 environmment  https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/
     I use a board ESP32 Dev Module
     Some other libraries are needed. I don't remember exactly which are mandatory and which have been installed for testing
-![nomimage](libraries_1.jpg) ![nomimage](libraries_2.jpg) ![nomimage](libraries_3.jpg)
+
+![nomimage](libraries_1.jpg) 
+
+![nomimage](libraries_2.jpg) 
+
+![nomimage](libraries_3.jpg)
 
 The softawre needs some calibration depending on components used.
 
