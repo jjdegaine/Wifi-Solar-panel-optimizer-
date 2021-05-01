@@ -110,12 +110,12 @@ The full Schematic is available on GITHUB
     One software for the Server and one software for the client
 
     ESP32 processor needs a specific environmment on Arduino software
-    see link to install ESP32 environmment  
+    see link to install ESP32 environmment
+
 [esp32 install](https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/)
 
-    I use a board ESP32 Dev Module
+I use a board ESP32 Dev Module:  [ESP32 devkit](https://www.tme.eu/fr/details/esp32-devkitc-32u/outils-pour-transmission-de-donnees/espressif/)
 
-[ESP32 devkit](https://www.tme.eu/fr/details/esp32-devkitc-32u/outils-pour-transmission-de-donnees/espressif/)
     Some other libraries are needed. I don't remember exactly which are mandatory and which have been installed for testing
 
 ![nomimage](libraries_1.jpg) 
