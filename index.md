@@ -98,7 +98,7 @@ The full Schematic is available on GITHUB
 # Software description
 
 
-    see comments on source code :-)
+    see comments on source code :-)    https://github.com/jjdegaine/Wifi-Solar-panel-optimizer-
 
     One software for the Server and one software for the client
 
