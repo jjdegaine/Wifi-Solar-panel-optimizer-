@@ -55,8 +55,8 @@ A lot of opimizer exist, commercial one and DIY project. The commercial optimize
  [forum photovoltaique](http://forum-photovoltaique.fr/viewtopic.php?f=18&t=38146)
  
 
- ESP32 module embed a dual core with a dual-core32-bit and a wi-fi link. 
- One core will be used for power calculation, the second core for wi-fi link
+ ESP32 module embed a dual core with a dual-core32-bit and a wifi link. 
+ One core will be used for power calculation, the second core for wi-fi link.
  The power calculation is mainly based on ptiwatt router.
 
 
@@ -110,7 +110,8 @@ The full Schematic is available on GITHUB
     One software for the Server and one software for the client
 
     ESP32 processor needs a specific environmment on Arduino software
-    see link to install ESP32 environmment  [esp32](https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/)
+    see link to install ESP32 environmment  
+[esp32](https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/)
     I use a board ESP32 Dev Module
     Some other libraries are needed. I don't remember exactly which are mandatory and which have been installed for testing
 
