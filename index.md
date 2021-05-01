@@ -12,19 +12,23 @@ html: true
  
     The pump is a 1.1kW so I install 4 * 250W solar panel on a firewood storage shed roof.
 
-[lien](https://www.oscaro-power.com/kit-solaire-autoconsommation/706-3835-kit-solaire-autoconsommation-le-petit-kit-meilleur-prix.html#/175-nombre_de_panneau_kit-4/768-type_de_fixation-fibrociment)
+[solar panel web site](https://www.oscaro-power.com/kit-solaire-autoconsommation/706-3835-kit-solaire-autoconsommation-le-petit-kit-meilleur-prix.html#/175-nombre_de_panneau_kit-4/768-type_de_fixation-fibrociment)
 
 
 
     Due to mains regulation I realized that the excess energy must not be sent to grid. 
     
-    It will be the case in winter (no swimming pool), in spring or autum when the swimming pump is connected only 3 or 4 hours per day.
+    It will be the case in winter (no swimming pool), in spring or autum when the swimming pump is connected 
+    
+    only 3 or 4 hours per day.
 
     May be also in summer when the pump is connected 6 or 7 hours per day.
 
     In winter the excess energy could be used to heat my workshop in the basement.
 
-    In the other seasons a second small pump with a waterfall and a swimming pool heater could used this excess energy.
+    In the other seasons a second small pump with a waterfall and a swimming pool heater could used 
+    
+    this excess energy.
 
     Thereafter my home_eletric_wiring
 
@@ -44,11 +48,11 @@ A lot of opimizer exist, commercial one and DIY project. The commercial optimize
 
  The solar Panel Optimizer is based on a processor ESP32-DEVKITC-32U which is compatible with arduino. The existing DIY project are based on arduino.
 
- https://mk2pvrouter.co.uk/index.html
+ [mk2pvrouter](https://mk2pvrouter.co.uk/index.html)
 
- http://ptiwatt.kyna.eu/?post/2018/07/23/Fabriquer-un-power-router
+ [ptwatt](http://ptiwatt.kyna.eu/?post/2018/07/23/Fabriquer-un-power-router)
 
- http://forum-photovoltaique.fr/viewtopic.php?f=18&t=38146
+ [forum photovoltaique](http://forum-photovoltaique.fr/viewtopic.php?f=18&t=38146)
  
 
  ESP32 module embed a dual core with a dual-core32-bit and a wi-fi link. 
@@ -89,7 +93,7 @@ The full Schematic is available on GITHUB
  
  the two version of GERBER for manufactoring are available on GITHUB
  
- PCB supplier: https://jlcpcb.com/
+ PCB supplier: [jlcpcb](https://jlcpcb.com/)
 
  BOM supplier: mainly aliexpress, and friends...
 
@@ -99,12 +103,12 @@ The full Schematic is available on GITHUB
 # Software description
 
 
-    see comments on source code :-)    https://github.com/jjdegaine/Wifi-Solar-panel-optimizer-
+    see comments on source code :-)    [github](https://github.com/jjdegaine/Wifi-Solar-panel-optimizer-)
 
     One software for the Server and one software for the client
 
     ESP32 processor needs a specific environmment on Arduino software
-    see link to install ESP32 environmment  https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/
+    see link to install ESP32 environmment  [esp32](https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/)
     I use a board ESP32 Dev Module
     Some other libraries are needed. I don't remember exactly which are mandatory and which have been installed for testing
 
