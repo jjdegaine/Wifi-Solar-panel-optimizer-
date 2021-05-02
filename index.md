@@ -127,7 +127,8 @@ Some other libraries are needed. I don't remember exactly which are mandatory an
 The softawre needs some calibration depending on components used.
 
     measure U and I ADC 0Volt using software "testminmax_esp32" and modify values
-    Connect the ESP board WITHOUT the mains.
+    Connect the ESP board WITHOUT the mains to a PC with an USB cable.
+    ADC value are available with a terminal (like hyperterminal 115200 bauds)
 
 ```c++
 //
@@ -138,11 +139,13 @@ float ADC_I_0A = 467 ;
 
 
     measure shift IT zero cross using software "dim final"  and modify value 
-    Connect an incandescent lamp , a startup with DIM=0 lamp shines. DIM will slowly increase, suddenly the lamp turn off. Note the DIM value.
+    Connect an incandescent lamp to the SCR, at startup with DIM=0 lamp shines. DIM will slowly increase, suddenly the lamp turn off. Note the DIM value on the LCD.
+    By default dimthreshold=30
 
 ```c++
 byte dimthreshold=30 ;	// dimthreshold; value to added at dim to compensate phase shift
 ```
+    Download final software (PowerRouter_v2.0 or client_v2.0)
     measure mains voltage and modify value Vcalibration. Voltage and Current can be displayed on the OLED using the switch SW2
 
     ==> Vcalibration
