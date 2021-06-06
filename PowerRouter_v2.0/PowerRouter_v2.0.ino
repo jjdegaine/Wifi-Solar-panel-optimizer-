@@ -61,6 +61,7 @@ PIN description
 
 
 version 2.0 first release version
+
 */
 
 
@@ -265,7 +266,7 @@ void IRAM_ATTR onTimer() {
                                 // i minimum ==> start SSR just after zero crossing half period ==> max power
                                 // i maximum ==> start SSR at the end of the zero crossing half period ==> minimum power
        digitalWrite(SCR_pin, HIGH);     // start SSR
-       delayMicroseconds(50);             // Pause briefly to ensure the SSR turned on
+       delayMicroseconds(5);             // Pause briefly to ensure the SSR turned on
        digitalWrite(SCR_pin, LOW);      // Turn off the SSR gate, 
        i = 0;                             // Reset the accumulator
        digitalWrite(SCRLED, HIGH);      // start led SSR 
