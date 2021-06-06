@@ -1,4 +1,4 @@
-*
+/*
 
 _________________________________________________________________
 |                                                               |
@@ -60,6 +60,7 @@ PIN description
 
 
 Version 2.0 first release version
+version 2.1 adding watchdog; scr command 5usec; period step 75usec
 
 */
 
@@ -75,6 +76,7 @@ Version 2.0 first release version
 #include <Esp.h>
 #include <WiFi.h>
 #include <WiFiUdp.h>
+#include <esp_task_wdt.h>
 
 //oled
 
@@ -118,14 +120,14 @@ int Treshlold_relay1 = 320000;          // Threshold to stop relay
 int Treshlold_start_relay1 = 0;        // Threshold to start relay
 int treshloldP     = 25000;           // Threshold to start power adjustment 1 = 1mW ; 
 
-
+#define WDT_TIMEOUT 6 // 6 secondes watchdog
 
 unsigned long unballasting_timeout = 300000; // timeout to avoid relay command too often 300 secondes
 unsigned long unballasting_time;            // timer for unballasting 
 byte unballasting_counter = 0;             // counter mains half period
 byte unballasting_dim_min = 5;             // value of dim to start relay
 
-unsigned int reaction_coeff  = 180; 
+unsigned int reaction_coeff  = 25; // small coeff due to wifi timing
 
 
 // Input and ouput of the ESP32
@@ -144,14 +146,14 @@ const byte zeroCrossPin      = 19;
 
 // zero-crossing interruption  :
  
-byte dimthreshold=30 ;					// dimthreshold; value to added at dim to compensate phase shift
+byte dimthreshold=35 ;					// dimthreshold; value to added at dim to compensate phase shift
 byte dimmax = 128;              // max value to start SCR command
 byte dim = dimmax;              // Dimming level (0-128)  0 = on, 128 = 0ff 
-byte dim_sinus [129] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21, 23, 24, 25, 27, 28, 31, 32, 34, 35, 37, 39, 41, 43, 44, 47, 49, 50, 53, 54, 57, 58, 60, 63, 64, 65, 68, 70, 71, 74, 77, 78, 79, 82, 84, 86, 87, 89, 91, 93, 94, 96, 99, 100, 101, 103, 104, 106, 107, 108, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 122, 123, 124, 124, 124, 125, 125, 126, 126, 127, 127, 127, 127, 127, 127, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128} ;
+byte dim_sinus [129] = {0, 15, 27, 30, 34, 38, 40, 43, 45, 47, 48, 50, 52, 54, 55, 57, 59, 60, 62, 63, 64, 65, 67, 68, 70, 71, 73, 74, 75, 76, 77, 78, 79, 80, 81, 83, 83, 84, 85, 86, 87, 87, 88, 89, 90, 91, 92, 93, 94, 95, 95, 96, 96, 96, 97, 98, 98, 98, 99, 100, 101, 102, 102, 103, 103, 104, 104, 105, 106, 106, 106, 106, 106, 106, 107, 107, 107, 107, 107, 107, 107, 108, 108, 108, 109, 109, 109, 109, 110, 111, 112, 113, 114, 114, 115, 115, 116, 116, 117, 117, 118, 118, 119, 120, 121, 121, 122, 122, 123, 123, 124, 124, 125, 125, 126, 127, 127, 127, 127, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128} ;
 
 byte dimphase = dim + dimthreshold; 
 byte dimphasemax = dimmax + dimthreshold;
-       
+byte dimphaseit = dimphase;      
 
 // wifi UDP
 
@@ -165,7 +167,7 @@ unsigned long time_udp_limit = 10000 ; // time to leave UDP 10 sec
 signed long wait_it_limit = 3 ;  // delay 3msec
 signed long it_elapsed; // counter for delay 3 msec
 
-char periodStep = 68;                            // 68 * 127 = 10msec, calibration using oscilloscope
+char periodStep = 75;                            // 75 * 128 = 10msec new v2.1
 volatile int i = 0;                              // Variable to use as a counter
 volatile bool zero_cross = false;                // zero cross flag for SCR
 volatile bool zero_cross_flag = false;           // zero cross flag for power calculation
@@ -196,6 +198,8 @@ unsigned int memo_temps = 0;
 bool relay_1 = false ; // Flag relay 1
 bool relay_2 = false ; // Flag relay 2
 
+bool synchro = false ; // Flag for synchro with wifi and regulation
+
 // init timer IT
 hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
@@ -220,12 +224,13 @@ void Taskwifi_udp( void *pvParameters );
 
 void IRAM_ATTR zero_cross_detect() {   // 
      portENTER_CRITICAL_ISR(&mux);
-     portEXIT_CRITICAL_ISR(&mux);
-     zero_cross_flag = true;   // Flag for power calculation
-     zero_cross = true;        // Flag for SCR
-     first_it_zero_cross = true ;  // flag to start a delay 2msec
-     digitalWrite(SCRLED, LOW); //reset SCR LED
-       
+
+        zero_cross_flag = true;   // Flag for power calculation
+        zero_cross = true;        // Flag for SCR
+        first_it_zero_cross = true ;  // flag to start a delay 2msec
+        dimphaseit = dimphase;
+
+     portEXIT_CRITICAL_ISR(&mux);  
    
 }  
 
@@ -237,18 +242,17 @@ void IRAM_ATTR zero_cross_detect() {   //
 */ 
 void IRAM_ATTR onTimer() {
   portENTER_CRITICAL_ISR(&timerMux);
-  
-  portEXIT_CRITICAL_ISR(&timerMux);
-  
-   if(zero_cross == true && dimphase < dimphasemax )  // First check to make sure the zero-cross has 
+
+   if(zero_cross == true && dimphaseit < dimphasemax )  // First check to make sure the zero-cross has 
  {                                                    // happened else do nothing
    
-     
-     if(i>dimphase) {            // i is a counter which is used to SCR command delay 
+     if (i== dimthreshold) {digitalWrite(SCRLED, LOW); } //reset SCR LED
+
+     if(i>dimphaseit) {            // i is a counter which is used to SCR command delay 
                                 // i minimum ==> start SCR just after zero crossing half period ==> max power
                                 // i maximum ==> start SCR at the end of the zero crossing half period ==> minimum power
        digitalWrite(SCR_pin, HIGH);     // start SCR
-       delayMicroseconds(50);             // Pause briefly to ensure the SCR turned on
+       delayMicroseconds(5);             // Pause briefly to ensure the SCR turned on new v2.1
        digitalWrite(SCR_pin, LOW);      // Turn off the SCR gate, 
        i = 0;                             // Reset the accumulator
        digitalWrite(SCRLED, HIGH);      // start led SCR 
@@ -259,7 +263,8 @@ void IRAM_ATTR onTimer() {
       }           // If the dimming value has not been reached, incriment the counter
      
  }      // End zero_cross check
-
+ 
+portEXIT_CRITICAL_ISR(&timerMux);
 }
 
 
@@ -281,6 +286,7 @@ void setup() {                  // Begin setup
  pinMode(pin_calibration, INPUT); 
 
 unballasting_time= millis(); // set up timer unballasting
+
 
 
 // USB init
@@ -345,8 +351,9 @@ display.display();
     ,  ARDUINO_RUNNING_CORE);
 
   // Now the task scheduler, which takes over control of scheduling individual tasks, is automatically started.
+
+
   
- 
 }                
 
 //____________________________________________________________________________________________
@@ -376,6 +383,11 @@ void TaskUI(void *pvParameters)  // This is the task UI.
 {
   (void) pvParameters;
 
+// init watchdog on core task UI new v2.1
+
+  esp_task_wdt_init(WDT_TIMEOUT, true); //enable panic so ESP32 restarts
+  esp_task_wdt_add(NULL); //add current thread to WDT watch
+ 
   for (;;) // A Task shall never return or exit.
   {
   
@@ -456,33 +468,34 @@ void TaskUI(void *pvParameters)  // This is the task UI.
 //____________________________________________________________________________________________
 //
 //
-// dimstep calculation.  
+// dimstep calculation.  Dimstep must be calculate when synchro is true (rpower received by wifi )
 //
-  
-  if (relay_1 = true) { // if relay is not on SCR must be OFF
+  if (synchro == true ) {
 
-  
-  if( rPower > 0 ) { dimstep = (rPower/1000)/reaction_coeff + 1; } 
-  else { dimstep = 1 - (rPower/1000)/reaction_coeff; }
-  
-  // when rPower is less than treshloldP ==> unlalanced power must increased ==> DIM must be reduced
 
-  if( rPower < treshloldP ) {      
-    if( dim > dimstep )  dim -= dimstep; else  dim = 0;
-  } 
+    if( rPower > 0 ) { dimstep = (rPower/1000)/reaction_coeff + 1; } 
+    else { dimstep = 1 - (rPower/1000)/reaction_coeff; }
+    
+    // when rPower is less than treshloldP ==> unlalanced power must increased ==> DIM must be reduced
 
-// when rPower is higher than treshloldP ==> unlalanced power must decreased ==> DIM must be increasad
+    if( rPower < treshloldP ) {      
+      if( dim > dimstep )  dim -= dimstep; else  dim = 0;
+    } 
 
-  else if( rPower > treshloldP ) {                   
-    if( dim + dimstep < dimmax ) dim += dimstep;  else  dim = dimmax; 
-  }
+  // when rPower is higher than treshloldP ==> unlalanced power must decreased ==> DIM must be increasad
 
-  if(dim < 1) { digitalWrite(limiteLED, HIGH); }  // if dim is at the minimum, control regulation is at the maximum 
-  else { digitalWrite(limiteLED, LOW); }
-  
+    else if( rPower > treshloldP ) {                   
+      if( dim + dimstep < dimmax ) dim += dimstep;  else  dim = dimmax; 
+    }
 
-// dimphase = dim+ dimthreshold; // Value to be used by the timer interrupt due to real phase between interruption and mains
-dimphase = dim_sinus [ dim ] + dimthreshold;
+    if(dim < 1) { digitalWrite(limiteLED, HIGH); }  // if dim is at the minimum, control regulation is at the maximum 
+    else { digitalWrite(limiteLED, LOW); }
+    //
+
+    // dimphase = dim+ dimthreshold; // Value to be used by the timer interrupt due to real phase between interruption and mains
+    dimphase = dim_sinus [ dim ] + dimthreshold;
+    synchro = false ;
+
   }
 
 //
@@ -508,11 +521,8 @@ if (rPower < Treshlold_start_relay1)  // if power < 0 Relay 1 must be ON; immedi
               unballasting_time= millis();   
         }  
      } 
-      
-  
-
+           
  
-
   // Display each 2 seconds
 
 
@@ -551,6 +561,7 @@ if (rPower < Treshlold_start_relay1)  // if power < 0 Relay 1 must be ON; immedi
           display.drawString(0, 22, String(int(Power_wifi)));
           display.display();
 
+          // delay (7000); // to test watchdog with switch calibration new v2.1
 
         }
         if( VERBOSE == true ) {
@@ -603,9 +614,10 @@ if (rPower < Treshlold_start_relay1)  // if power < 0 Relay 1 must be ON; immedi
             }
 
 
-
+      esp_task_wdt_reset(); // reset watchdog new v2.1
   } 
   
+
 }                              // end task UI
 
 
@@ -655,6 +667,8 @@ void Taskwifi_udp(void *pvParameters)  // This is a task.
     
     Power_wifi = strtof(mystring_power_wifi, NULL);
 
+    synchro = true ; // dim, dimstep could be calculated with a new value of power
+
     // ack 
         Udp.beginPacket(ipServidor, 9999);
         Udp.write(&ack,1);
@@ -664,6 +678,7 @@ void Taskwifi_udp(void *pvParameters)  // This is a task.
        
       }		
                
+    
 
     } // end for loop wifi
     
