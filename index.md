@@ -1,134 +1,134 @@
 ---
 marp: false
 theme: default
-title: Solar Panel Optimizer with WIFI Slave SSR
+title: Solar Panel Optimizer with WiFi Slave SSR
 html: true
 ---
 
-# Solar Pannel Optimizer with WIFI slave SSR
+# Solar Panel Optimizer with WiFi Slave SSR
 
-    The Goal of this WEB site is to explain why and how I create a Solar Panel Optimzer with a WIFI slave SSR
-    First of all I have decided to install solar panel to compensate the energy needed for the simming tool pump.
- 
-    The pump is a 1.1kW so I install 4 * 250W solar panel on a firewood storage shed roof.
+    The goal of this website is to explain why and how I created a solar panel optimizer with a WiFi slave SSR.
+    First of all, I decided to install solar panels to offset the energy needed by the swimming pool pump.
 
-[solar panel web site](https://www.oscaro-power.com/kit-solaire-autoconsommation/706-3835-kit-solaire-autoconsommation-le-petit-kit-meilleur-prix.html#/175-nombre_de_panneau_kit-4/768-type_de_fixation-fibrociment)
+    The pump is rated at 1.1 kW, so I installed 4 × 250 W solar panels on the roof of a firewood storage shed.
+
+[solar panel website](https://www.oscaro-power.com/kit-solaire-autoconsommation/706-3835-kit-solaire-autoconsommation-le-petit-kit-meilleur-prix.html#/175-nombre_de_panneau_kit-4/768-type_de_fixation-fibrociment)
 
 
 
-    Due to mains regulation I realized that the excess energy must not be sent to grid. 
-    
-    It will be the case in winter (no swimming pool), in spring or autum when the swimming pump is connected 
-    
+    Because of mains regulations, I realized that the excess energy must not be sent to the grid.
+
+    This will be the case in winter (no swimming), and in spring or autumn, when the pool pump runs
+
     only 3 or 4 hours per day.
 
-    May be also in summer when the pump is connected 6 or 7 hours per day.
+    It may also happen in summer, when the pump runs 6 or 7 hours per day.
 
-    In winter the excess energy could be used to heat my workshop in the basement.
+    In winter, the excess energy could be used to heat my workshop in the basement.
 
-    In the other seasons a second small pump with a waterfall and a swimming pool heater could used 
-    
+    In the other seasons, a second small pump for a waterfall and a swimming pool heater could use
+
     this excess energy.
 
-    Thereafter my home_eletric_wiring
+    Below is my home electric wiring.
 
 ![nomimage](home_eletric_wiring.jpg)
 
-    Many thanks to my colleague Xavier, Nabil, Regis, Benjamin
+    Many thanks to my colleagues Xavier, Nabil, Régis and Benjamin.
 
-    Please note that it was my first Hardware and Software project since my Ph.D. forty years ago...
-    
-    
+    Please note that this was my first hardware and software project since my Ph.D., forty years ago...
+
+
 
 # Optimizer description
 
-The issue was the existing electric wiring so I decided to create a Solar Panel Optimizer with a WIFI slave SSR. see my home electric wiring description.
+The issue was the existing electric wiring, so I decided to create a solar panel optimizer with a WiFi slave SSR. See my home electric wiring description above.
 
-A lot of opimizer exist, commercial one and DIY project. The commercial optimizer are quite expensive and not so efficent. After several weeks reading website and DIY optimizer description I decided to create my own project, and it was quite fun !
+Many optimizers exist, both commercial ones and DIY projects. Commercial optimizers are quite expensive and not very efficient. After several weeks of reading websites and DIY optimizer descriptions, I decided to create my own project, and it was great fun!
 
- The solar Panel Optimizer is based on a processor ESP32-DEVKITC-32U which is compatible with arduino. The existing DIY project are based on arduino.
+The solar panel optimizer is based on an ESP32-DEVKITC-32U processor board, which is compatible with Arduino. The existing DIY projects are based on Arduino.
 
  [mk2pvrouter](https://mk2pvrouter.co.uk/index.html)
 
  [ptwatt](http://ptiwatt.kyna.eu/?post/2018/07/23/Fabriquer-un-power-router)
 
  [forum photovoltaique](http://forum-photovoltaique.fr/viewtopic.php?f=18&t=38146)
- 
 
- ESP32 module embed a dual core with a dual-core32-bit and a wifi link. 
- One core will be used for power calculation, the second core for wi-fi link.
- The power calculation is mainly based on ptiwatt router.
+
+The ESP32 module embeds a 32-bit dual-core processor and a WiFi link.
+One core is used for the power calculation and the other for the WiFi link.
+The power calculation is mainly based on the ptiwatt router.
 
 
 
 # Hardware description
 
 
- A power supply to provide +8V and regulated +5V 
+A power supply provides +8 V and a regulated +5 V.
 
 ![nomimage](power_supply.jpg)
 
- An optocoupler H11A1 to detect zero cross interruption, 
+An H11A1 optocoupler detects the zero-crossing interrupt.
 
 ![nomimage](Zero_cross_detection.jpg)
 
-a small shift is compensated by software (dimthreshold). the falling edge is hidden by software (first_it_zero_cross)
+A small shift is compensated by software (dimthreshold). The falling edge is masked by software (first_it_zero_cross).
 
 ![nomimage](Zero_cross_detection_IT.jpg)
 
- Voltage and current measurement using ADC with a shift of 3.3V/2
+Voltage and current are measured using the ADC, with an offset of 3.3 V/2.
 
 ![nomimage](UI_measurement.jpg)
 
-A command for the SSR
+A command output drives the SSR.
 
 ![nomimage](SSR_control.jpg)
 
-The full Schematic is available on GITHUB
+The full schematic is available on GitHub.
 
 ![nomimage](schema.jpg)
 
 
- the first version of PCB was tested and needs some modifications, the updated version was not tested.
- 
- the two version of GERBER for manufactoring are available on GITHUB
- 
- PCB supplier: [jlcpcb](https://jlcpcb.com/)
+The first version of the PCB was tested and needs some modifications. The updated version has not been tested.
 
- BOM supplier: mainly aliexpress, and friends...
+Both versions of the Gerber files for manufacturing are available on GitHub.
 
- 
+PCB supplier: [jlcpcb](https://jlcpcb.com/)
+
+BOM supplier: mainly AliExpress, and friends...
+
+
 
 
 # Software description
 
 
-    see comments on source code :-)    
-    
+    See the comments in the source code :-)
+
 [github](https://github.com/jjdegaine/Wifi-Solar-panel-optimizer-)
 
-One software for the Server and one software for the client
+There is one program for the server and one for the client.
 
-ESP32 processor needs a specific environmment on Arduino software
-see link to install ESP32 environmment
+The ESP32 processor needs a specific environment in the Arduino IDE.
+See the link below to install the ESP32 environment.
 
 [esp32 install](https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/)
 
-I use a board ESP32 Dev Module:  [ESP32 devkit](https://www.tme.eu/fr/details/esp32-devkitc-32u/outils-pour-transmission-de-donnees/espressif/)
+I use an ESP32 Dev Module board: [ESP32 devkit](https://www.tme.eu/fr/details/esp32-devkitc-32u/outils-pour-transmission-de-donnees/espressif/)
 
-Some other libraries are needed. I don't remember exactly which are mandatory and which have been installed for testing
+Some other libraries are needed. I don't remember exactly which are mandatory and which were installed just for testing.
 
-![nomimage](libraries_1.jpg) 
+![nomimage](libraries_1.jpg)
 
-![nomimage](libraries_2.jpg) 
+![nomimage](libraries_2.jpg)
 
 ![nomimage](libraries_3.jpg)
 
-The softawre needs some calibration depending on components used.
+The software needs some calibration, depending on the components used.
 
-    measure U and I ADC 0Volt using software "testminmax_esp32" and modify values
-    Connect the ESP board WITHOUT the mains to a PC with an USB cable.
-    ADC value are available with a terminal (like hyperterminal 115200 bauds)
+    Measure the U and I ADC 0 V values using the software "testminmax_esp32" and modify the values.
+    Connect the ESP board WITHOUT the mains to a PC with a USB cable.
+    ADC values are available in a terminal (such as HyperTerminal at 115200 baud).
 
 ```c++
 //
@@ -138,45 +138,42 @@ float ADC_I_0A = 467 ;
 ```
 
 
-    measure shift IT zero cross using software "dim final"  and modify value 
-    Connect an incandescent lamp to the SCR, at startup with DIM=0 lamp shines. DIM will slowly increase, suddenly the lamp turn off. Note the DIM value on the LCD.
-    By default dimthreshold=30
+    Measure the zero-cross interrupt shift using the software "dim final" and modify the value.
+    Connect an incandescent lamp to the SSR. At startup with DIM=0, the lamp shines. DIM then slowly increases, and at some point the lamp suddenly turns off. Note the DIM value shown on the LCD.
+    By default, dimthreshold=30.
 
 ```c++
-byte dimthreshold=30 ;	// dimthreshold; value to added at dim to compensate phase shift
+byte dimthreshold=30 ;	// dimthreshold: value added to dim to compensate for phase shift
 ```
-    Download final software (PowerRouter_v2.0 or client_v2.0)
-    measure mains voltage and modify value Vcalibration. Voltage and Current can be displayed on the OLED using the switch SW2
+    Download the final software (PowerRouter_v2.0 or client_v2.0).
+    Measure the mains voltage and modify the Vcalibration value. Voltage and current can be displayed on the OLED using the switch SW2.
 
     ==> Vcalibration
 ```c++
-float Vcalibration     = 0.90;   // to obtain the mains exact value 
+float Vcalibration     = 0.90;   // to obtain the exact mains value
 ```
 
-    measure mains current using and known power charge and modify value
+    Measure the mains current using a known power load and modify the Icalibration value.
 
     ==> Icalibration
 ```c++
-float Icalibration     = 93;     // current in milliampères
+float Icalibration     = 93;     // current in milliamperes
 ```
-   The boars is ready to be used.
- 
-Wi-fi
+The board is ready to be used.
 
-    an UDP link is used to reduce data transfert, only power value is transmitted with an Acknowledge by the client.
+WiFi
 
-    The power value is transmitted each 50msec (byte send_UDP_max); 
+    A UDP link is used to reduce data transfer: only the power value is transmitted, with an acknowledgment from the client.
 
-    A Time To live is used to check the WiFi activity and restart Wifi link if needed.
+    The power value is transmitted every 50 ms (byte send_UDP_max).
 
-    a small M5STACK module can be used as a remote display.
+    A time-to-live is used to check WiFi activity and restart the WiFi link if needed.
 
-    Wifi parameter to be modified
+    A small M5Stack module can be used as a remote display.
+
+    WiFi parameters to be modified:
 
 ```c++
-const char *ssid = "BB9ESERVER";   // for example to be changed 
-const char *password = "BB9ESERVER";  // for examplet  to be changed
+const char *ssid = "BB9ESERVER";   // for example, to be changed
+const char *password = "BB9ESERVER";  // for example, to be changed
 ```
-    
-
-
